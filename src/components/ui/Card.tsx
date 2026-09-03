@@ -89,16 +89,18 @@ export function PageSection({
   id,
   title,
   description,
+  action,
   children,
 }: {
   id?: string;
   title: string;
   description?: string;
+  action?: ReactNode;
   children: ReactNode;
 }) {
   return (
     <section id={id} className="mb-8">
-      <div className="mb-3.5 flex items-baseline justify-between">
+      <div className="mb-3.5 flex flex-wrap items-baseline justify-between gap-2">
         <div>
           <h2 className="text-[13px] font-semibold uppercase tracking-wider text-[var(--color-ink-500)]">
             {title}
@@ -107,6 +109,7 @@ export function PageSection({
             <p className="mt-0.5 text-[13px] text-[var(--color-ink-400)]">{description}</p>
           )}
         </div>
+        {action}
       </div>
       {children}
     </section>

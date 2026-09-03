@@ -1,4 +1,9 @@
+import { AVG_CELL_WATTAGE } from "@/lib/constants";
 import type { Status } from "@/types/dashboard";
+
+/** Shared MW / cell-count unit toggle for the Production Performance, Production
+ * vs Target, Production Trend, and Cell Line Performance views. */
+export type ProductionUnit = "mw" | "lacs";
 
 export function capacityAvailabilityPct(availableMW: number, theoreticalMW: number): number {
   return (availableMW / theoreticalMW) * 100;
@@ -64,6 +69,36 @@ export function formatGW(value: number, digits = 2): string {
 
 export function formatMn(value: number, digits = 2): string {
   return `${value.toFixed(digits)} Mn`;
+}
+
+/**
+ * Cell/wafer quantities are displayed in "Lacs" per the plant's convention,
+ * where 1 Lakh = 10 Lacs (i.e. Lacs = underlying millions-of-cells value x 10).
+ * This is NOT the standard Indian numbering definition of "Lac" (a synonym
+ * for Lakh) - it is this dashboard's own display unit, so the conversion is
+ * applied deliberately rather than just relabeling "Mn" as "Lacs".
+ */
+export function formatLacsFromMn(valueMn: number, digits = 2): string {
+  return `${(valueMn * 10).toFixed(digits)} Lacs`;
+}
+
+/** Cell count (in millions) implied by an MW value, using the plant's average cell wattage. */
+export function mwToCellsMn(mw: number): number {
+  return mw / AVG_CELL_WATTAGE;
+}
+
+/** Numeric value of an MW quantity in the selected production unit (no suffix). */
+export function productionDisplayValue(mw: number, unit: ProductionUnit): number {
+  return unit === "lacs" ? mwToCellsMn(mw) * 10 : mw;
+}
+
+export function productionUnitSuffix(unit: ProductionUnit): string {
+  return unit === "lacs" ? "Lacs" : "MW";
+}
+
+/** Formats an MW quantity in the selected production unit, converting via the cell-wattage relationship when showing Lacs. */
+export function formatProductionValue(mw: number, unit: ProductionUnit, digits = 2): string {
+  return `${productionDisplayValue(mw, unit).toFixed(digits)} ${productionUnitSuffix(unit)}`;
 }
 
 export function formatPct(value: number, digits = 1): string {

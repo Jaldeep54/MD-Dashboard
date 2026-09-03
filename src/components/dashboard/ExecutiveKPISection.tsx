@@ -4,6 +4,7 @@ import { Banknote, Factory, Gauge, IndianRupee, Sparkles } from "lucide-react";
 import { KPICard } from "@/components/dashboard/KPICard";
 import { TotalContributionCard } from "@/components/dashboard/TotalContributionCard";
 import {
+  formatLacsFromMn,
   formatMW,
   formatPct,
   formatRupeePerW,
@@ -58,8 +59,9 @@ export function ExecutiveKPISection({
       <div className="grid grid-cols-2 gap-3.5 lg:grid-cols-4">
         <KPICard
           title="Production"
-          definition="Actual saleable production versus the management target for the selected period and scope."
+          definition="Actual saleable production versus the management target for the selected period and scope. Total Cell Output is shown alongside in Lacs."
           value={formatMW(production.actualMW)}
+          unitNote={formatLacsFromMn(production.totalCellsMn)}
           target={formatMW(production.targetMW)}
           varianceLabel={`${formatPct(production.achievementPct, 1)} achieved`}
           status={productionStatus}

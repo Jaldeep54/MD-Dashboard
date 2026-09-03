@@ -14,11 +14,15 @@ import { ProductionPerformanceSection } from "@/components/dashboard/ProductionP
 import { PageSection } from "@/components/ui/Card";
 import { ValueContributionSection } from "@/components/dashboard/ValueContributionSection";
 import { useDashboardData } from "@/hooks/useDashboardData";
+import type { ProductionUnit } from "@/lib/calculations";
 import type { CellLineId } from "@/types/dashboard";
 
 export default function Home() {
   const { filters, setFilters, data } = useDashboardData();
   const [drawerTarget, setDrawerTarget] = useState<DrawerTarget | null>(null);
+  // Shared MW / Lacs toggle for Production Performance, Production vs Target,
+  // Production Trend, and Cell Line Performance - one selection, not four.
+  const [productionUnit, setProductionUnit] = useState<ProductionUnit>("mw");
 
   function handleSelectLine(lineId: string) {
     setDrawerTarget({ type: "line", lineId: lineId as CellLineId });
@@ -32,7 +36,12 @@ export default function Home() {
       <main className="mx-auto max-w-[1600px] px-6 py-6 lg:px-8">
         <ExecutiveKPISection data={data} onOpenDrawer={setDrawerTarget} />
 
-        <ProductionPerformanceSection data={data} onSelectLine={handleSelectLine} />
+        <ProductionPerformanceSection
+          data={data}
+          onSelectLine={handleSelectLine}
+          unit={productionUnit}
+          onUnitChange={setProductionUnit}
+        />
 
         <CapacityPerformanceSection capacity={data.capacity} capacityTrend={data.capacityTrend} />
 
@@ -44,6 +53,7 @@ export default function Home() {
             cellLines={data.cellLines}
             selectedLine={filters.line}
             onSelectLine={handleSelectLine}
+            unit={productionUnit}
           />
         </PageSection>
 

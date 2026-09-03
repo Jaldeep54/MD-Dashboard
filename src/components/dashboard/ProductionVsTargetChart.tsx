@@ -12,7 +12,15 @@ import {
 } from "recharts";
 import type { TooltipContentProps } from "recharts";
 import { ChartTooltipRow, ChartTooltipShell } from "@/components/dashboard/ChartTooltip";
-import { achievementPct, formatMW, formatPct, formatSigned, statusHigherIsBetter } from "@/lib/calculations";
+import {
+  achievementPct,
+  formatPct,
+  formatSigned,
+  productionDisplayValue,
+  productionUnitSuffix,
+  statusHigherIsBetter,
+  type ProductionUnit,
+} from "@/lib/calculations";
 import type { CellLinePerformance, LineFilter } from "@/types/dashboard";
 
 const STATUS_COLOR: Record<string, string> = {
@@ -28,6 +36,7 @@ interface ChartRow {
   actual: number;
   achievement: number;
   status: string;
+  unit: ProductionUnit;
 }
 
 function CustomTooltip({ active, payload }: TooltipContentProps) {
@@ -35,11 +44,12 @@ function CustomTooltip({ active, payload }: TooltipContentProps) {
   const row = payload[0]?.payload as ChartRow | undefined;
   if (!row) return null;
   const variance = row.actual - row.target;
+  const fmt = (v: number) => `${v.toFixed(2)} ${productionUnitSuffix(row.unit)}`;
   return (
     <ChartTooltipShell title={row.name}>
-      <ChartTooltipRow label="Target" value={formatMW(row.target)} />
-      <ChartTooltipRow label="Actual" value={formatMW(row.actual)} />
-      <ChartTooltipRow label="Variance" value={formatSigned(variance, (v) => formatMW(v))} />
+      <ChartTooltipRow label="Target" value={fmt(row.target)} />
+      <ChartTooltipRow label="Actual" value={fmt(row.actual)} />
+      <ChartTooltipRow label="Variance" value={formatSigned(variance, fmt)} />
       <ChartTooltipRow label="Achievement" value={formatPct(row.achievement)} />
     </ChartTooltipShell>
   );
@@ -49,18 +59,23 @@ export function ProductionVsTargetChart({
   cellLines,
   selectedLine,
   onSelectLine,
+  unit,
 }: {
   cellLines: CellLinePerformance[];
   selectedLine: LineFilter;
   onSelectLine: (lineId: string) => void;
+  unit: ProductionUnit;
 }) {
   const data: ChartRow[] = cellLines.map((l) => ({
     name: l.name,
     lineId: l.id,
-    target: Number(l.production.targetMW.toFixed(2)),
-    actual: Number(l.production.actualMW.toFixed(2)),
+    // Achievement/status are always derived from the raw MW values below,
+    // independent of the unit the bars themselves are drawn in.
+    target: Number(productionDisplayValue(l.production.targetMW, unit).toFixed(2)),
+    actual: Number(productionDisplayValue(l.production.actualMW, unit).toFixed(2)),
     achievement: achievementPct(l.production.actualMW, l.production.targetMW),
     status: statusHigherIsBetter(l.production.actualMW, l.production.targetMW, 3),
+    unit,
   }));
 
   return (

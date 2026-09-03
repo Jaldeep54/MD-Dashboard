@@ -3,7 +3,7 @@
 import { ChevronRight } from "lucide-react";
 import { Card, SectionHeading } from "@/components/ui/Card";
 import { StatusBadge } from "@/components/ui/StatusBadge";
-import { formatMW, formatPct, formatRupeePerW } from "@/lib/calculations";
+import { formatPct, formatProductionValue, formatRupeePerW, type ProductionUnit } from "@/lib/calculations";
 import { cn } from "@/lib/utils";
 import type { CellLinePerformance, LineFilter } from "@/types/dashboard";
 
@@ -11,10 +11,12 @@ export function CellLinePerformanceTable({
   cellLines,
   selectedLine,
   onSelectLine,
+  unit,
 }: {
   cellLines: CellLinePerformance[];
   selectedLine: LineFilter;
   onSelectLine: (lineId: string) => void;
+  unit: ProductionUnit;
 }) {
   return (
     <Card padded={false} className="overflow-hidden">
@@ -58,10 +60,10 @@ export function CellLinePerformanceTable({
                     </div>
                   </td>
                   <td className="px-3 py-3 text-right tabular-nums text-[var(--color-ink-900)]">
-                    {formatMW(line.production.actualMW, 2)}
+                    {formatProductionValue(line.production.actualMW, unit)}
                   </td>
                   <td className="px-3 py-3 text-right tabular-nums text-[var(--color-ink-500)]">
-                    {formatMW(line.production.targetMW, 2)}
+                    {formatProductionValue(line.production.targetMW, unit)}
                   </td>
                   <td
                     className={cn(

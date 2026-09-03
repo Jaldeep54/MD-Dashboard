@@ -1,3 +1,4 @@
+import { formatLacsFromMn } from "@/lib/calculations";
 import { cn } from "@/lib/utils";
 import type { ProductionMetrics } from "@/types/dashboard";
 
@@ -43,7 +44,7 @@ export function GradeSummary({ production }: { production: ProductionMetrics }) 
               item.emphasis ? "text-[22px]" : "text-[18px]",
             )}
           >
-            {item.cells.toFixed(2)} Mn
+            {formatLacsFromMn(item.cells)}
           </div>
           <div className={cn("mt-0.5 text-[12.5px] font-medium", item.text)}>{item.mw.toFixed(2)} MW</div>
         </div>
