@@ -3,91 +3,84 @@
 import { ChevronRight } from "lucide-react";
 import { Card, SectionHeading } from "@/components/ui/Card";
 import { StatusBadge } from "@/components/ui/StatusBadge";
-import { formatPct, formatProductionValue, formatRupeePerW, type ProductionUnit } from "@/lib/calculations";
 import { cn } from "@/lib/utils";
-import type { CellLinePerformance, LineFilter } from "@/types/dashboard";
+import type { LineProductionRow } from "@/types/manufacturing";
 
-export function CellLinePerformanceTable({
-  cellLines,
+export function ProductionByLineTable({
+  rows,
   selectedLine,
   onSelectLine,
-  unit,
 }: {
-  cellLines: CellLinePerformance[];
-  selectedLine: LineFilter;
+  rows: LineProductionRow[];
+  selectedLine: string;
   onSelectLine: (lineId: string) => void;
-  unit: ProductionUnit;
 }) {
   return (
     <Card padded={false} className="overflow-hidden">
       <div className="p-5 pb-0">
         <SectionHeading
-          title="Cell Line Performance"
-          description="Line-level attainment, capacity, yield and cost — click a row for detail."
+          title="Production by Line"
+          description="Line-level attainment, capacity utilization and grade mix — click a row for detail."
         />
       </div>
       <div className="overflow-x-auto">
-        <table className="w-full min-w-[720px] border-collapse text-[13px]">
+        <table className="w-full min-w-[680px] border-collapse text-[13px]">
           <thead>
             <tr className="border-y border-[var(--color-border)] bg-[var(--color-bg)]/60 text-left text-[11.5px] font-semibold uppercase tracking-wide text-[var(--color-ink-500)]">
-              <th className="px-5 py-2.5 font-semibold">Cell Line</th>
+              <th className="px-5 py-2.5 font-semibold">Line</th>
               <th className="px-3 py-2.5 text-right font-semibold">Production</th>
               <th className="px-3 py-2.5 text-right font-semibold">Target</th>
               <th className="px-3 py-2.5 text-right font-semibold">Achievement</th>
               <th className="px-3 py-2.5 text-right font-semibold">Capacity Util.</th>
-              <th className="px-3 py-2.5 text-right font-semibold">Process Yield</th>
-              <th className="px-3 py-2.5 text-right font-semibold">Cost/W</th>
+              <th className="px-3 py-2.5 text-right font-semibold">Good Grade %</th>
               <th className="px-3 py-2.5 pr-5 text-right font-semibold">Status</th>
             </tr>
           </thead>
           <tbody>
-            {cellLines.map((line) => {
-              const isSelected = selectedLine === line.id;
+            {rows.map((row) => {
+              const isSelected = selectedLine === row.id;
               return (
                 <tr
-                  key={line.id}
-                  onClick={() => onSelectLine(line.id)}
+                  key={row.id}
+                  onClick={() => onSelectLine(row.id)}
                   className={cn(
                     "group cursor-pointer border-b border-[var(--color-border)] transition-colors last:border-0 hover:bg-[var(--color-bg)]/70",
                     isSelected && "bg-[var(--color-info-bg)]/50",
-                    line.status === "critical" && "bg-[var(--color-critical-bg)]/25",
+                    row.status === "critical" && "bg-[var(--color-critical-bg)]/25",
                   )}
                 >
                   <td className="px-5 py-3 font-medium text-[var(--color-ink-900)]">
                     <div className="flex items-center gap-2">
-                      {line.name}
+                      {row.name}
                       <ChevronRight className="h-3.5 w-3.5 text-[var(--color-ink-300)] opacity-0 transition-opacity group-hover:opacity-100" />
                     </div>
                   </td>
                   <td className="px-3 py-3 text-right tabular-nums text-[var(--color-ink-900)]">
-                    {formatProductionValue(line.production.actualMW, unit)}
+                    {row.productionMW.toFixed(2)} MW
                   </td>
                   <td className="px-3 py-3 text-right tabular-nums text-[var(--color-ink-500)]">
-                    {formatProductionValue(line.production.targetMW, unit)}
+                    {row.targetMW.toFixed(2)} MW
                   </td>
                   <td
                     className={cn(
                       "px-3 py-3 text-right font-medium tabular-nums",
-                      line.production.achievementPct >= 100
+                      row.achievementPct >= 100
                         ? "text-[var(--color-positive-text)]"
-                        : line.production.achievementPct >= 97
+                        : row.achievementPct >= 97
                           ? "text-[var(--color-warning-text)]"
                           : "text-[var(--color-critical-text)]",
                     )}
                   >
-                    {formatPct(line.production.achievementPct)}
+                    {row.achievementPct.toFixed(1)}%
                   </td>
                   <td className="px-3 py-3 text-right tabular-nums text-[var(--color-ink-700)]">
-                    {formatPct(line.capacity.overallUtilizationPct, 0)}
+                    {row.capacityUtilizationPct.toFixed(0)}%
                   </td>
                   <td className="px-3 py-3 text-right tabular-nums text-[var(--color-ink-700)]">
-                    {formatPct(line.yieldMetrics.yieldPct)}
-                  </td>
-                  <td className="px-3 py-3 text-right tabular-nums text-[var(--color-ink-700)]">
-                    {formatRupeePerW(line.cost.actualPerW)}
+                    {row.goodGradePct.toFixed(1)}%
                   </td>
                   <td className="px-3 py-3 pr-5 text-right">
-                    <StatusBadge status={line.status} />
+                    <StatusBadge status={row.status} />
                   </td>
                 </tr>
               );

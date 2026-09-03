@@ -157,3 +157,16 @@ body {
 .animate-overlay-in {
   animation: overlay-in 0.2s ease-out;
 }
+
+@keyframes nav-drawer-in {
+  from {
+    transform: translateX(-100%);
+  }
+  to {
+    transform: translateX(0);
+  }
+}
+
+.animate-nav-drawer-in {
+  animation: nav-drawer-in 0.25s cubic-bezier(0.32, 0.72, 0, 1);
+}

@@ -1,5 +1,5 @@
 import { ArrowRight } from "lucide-react";
-import { formatPct } from "@/lib/calculations";
+import { formatLacsFromMn, formatPct } from "@/lib/calculations";
 import type { YieldMetrics } from "@/types/dashboard";
 
 export function YieldFlow({ yieldMetrics }: { yieldMetrics: YieldMetrics }) {
@@ -7,11 +7,11 @@ export function YieldFlow({ yieldMetrics }: { yieldMetrics: YieldMetrics }) {
 
   return (
     <div className="flex flex-col items-stretch gap-3 sm:flex-row sm:items-center">
-      <FlowNode label="Wafer Input" value={`${yieldMetrics.waferInputMn.toFixed(2)} Mn`} sub="wafers" />
+      <FlowNode label="Wafer Input" value={formatLacsFromMn(yieldMetrics.waferInputMn)} sub="wafers" />
       <FlowArrow />
       <FlowNode label="Processing" value="TOPCon Cell Line" sub="diffusion · texturing · metallization" muted />
       <FlowArrow />
-      <FlowNode label="Cell Output" value={`${yieldMetrics.cellOutputMn.toFixed(2)} Mn`} sub="cells" />
+      <FlowNode label="Cell Output" value={formatLacsFromMn(yieldMetrics.cellOutputMn)} sub="cells" />
       <FlowArrow />
       <div className="flex flex-1 flex-col items-center justify-center rounded-lg border border-[var(--color-border)] bg-[var(--color-bg)] px-4 py-3 text-center">
         <div className="text-[11.5px] font-medium text-[var(--color-ink-500)]">Process Yield</div>
