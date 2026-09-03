@@ -14,20 +14,24 @@ const COLORS = [
   "var(--color-ink-300)",
 ];
 
-function CustomTooltip({ active, payload }: TooltipContentProps) {
+function CustomTooltip({
+  active,
+  payload,
+  unitLabel,
+}: TooltipContentProps & { unitLabel: string }) {
   if (!active || !payload || !payload.length) return null;
   const item = payload[0]?.payload as LossBreakdownItem | undefined;
   if (!item) return null;
   return (
     <ChartTooltipShell title={item.category}>
       <div className="text-[12px] text-[var(--color-ink-500)]">
-        {formatQuantity(item.quantity)} cells · {formatPct(item.pctOfTotal, 0)} of total loss
+        {formatQuantity(item.quantity)} {unitLabel} · {formatPct(item.pctOfTotal, 0)} of total loss
       </div>
     </ChartTooltipShell>
   );
 }
 
-export function LossBreakdownChart({ data }: { data: LossBreakdownItem[] }) {
+export function LossBreakdownChart({ data, unitLabel = "cells" }: { data: LossBreakdownItem[]; unitLabel?: string }) {
   const topCategory = [...data].sort((a, b) => b.quantity - a.quantity)[0];
 
   return (
@@ -49,7 +53,7 @@ export function LossBreakdownChart({ data }: { data: LossBreakdownItem[] }) {
                 <Cell key={entry.category} fill={COLORS[i % COLORS.length]} />
               ))}
             </Pie>
-            <Tooltip content={CustomTooltip} />
+            <Tooltip content={(props) => <CustomTooltip {...props} unitLabel={unitLabel} />} />
           </PieChart>
         </ResponsiveContainer>
         <div className="pointer-events-none absolute inset-0 flex flex-col items-center justify-center">

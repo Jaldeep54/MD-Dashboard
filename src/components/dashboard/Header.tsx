@@ -1,13 +1,23 @@
 "use client";
 
-import { Bell, Factory } from "lucide-react";
+import { Bell, Factory, Menu } from "lucide-react";
 import { useState } from "react";
 import { PLANT_NAME, PLANT_SUBTITLE } from "@/lib/constants";
+import { NavDrawer } from "@/components/nav/NavDrawer";
 import type { ManagementAlert } from "@/types/dashboard";
 import { cn } from "@/lib/utils";
 
-export function Header({ lastUpdated, alerts }: { lastUpdated: string; alerts: ManagementAlert[] }) {
+export function Header({
+  lastUpdated,
+  alerts,
+  dashboardLabel = "MD Management Dashboard",
+}: {
+  lastUpdated: string;
+  alerts: ManagementAlert[];
+  dashboardLabel?: string;
+}) {
   const [open, setOpen] = useState(false);
+  const [navOpen, setNavOpen] = useState(false);
   const criticalCount = alerts.filter((a) => a.severity === "critical").length;
   const warningCount = alerts.filter((a) => a.severity === "warning").length;
   const totalFlags = criticalCount + warningCount;
@@ -16,6 +26,14 @@ export function Header({ lastUpdated, alerts }: { lastUpdated: string; alerts: M
     <header className="sticky top-0 z-30 border-b border-[var(--color-border)] bg-[var(--color-navy-950)]">
       <div className="mx-auto flex max-w-[1600px] items-center justify-between px-6 py-3.5 lg:px-8">
         <div className="flex items-center gap-3">
+          <button
+            type="button"
+            onClick={() => setNavOpen(true)}
+            className="flex h-9 w-9 items-center justify-center rounded-lg text-white/70 transition-colors hover:bg-white/10 hover:text-white"
+            aria-label="Open navigation"
+          >
+            <Menu className="h-5 w-5" strokeWidth={1.9} />
+          </button>
           <div className="flex h-9 w-9 items-center justify-center rounded-lg bg-[var(--color-navy-700)]">
             <Factory className="h-5 w-5 text-white" strokeWidth={1.75} />
           </div>
@@ -23,9 +41,7 @@ export function Header({ lastUpdated, alerts }: { lastUpdated: string; alerts: M
             <span className="text-[17px] font-bold tracking-tight text-white">{PLANT_NAME}</span>
             <span className="hidden text-[13px] text-white/50 sm:inline">{PLANT_SUBTITLE}</span>
             <span className="hidden h-3.5 w-px bg-white/20 md:inline" />
-            <span className="hidden text-[13px] font-medium text-white/70 md:inline">
-              MD Management Dashboard
-            </span>
+            <span className="hidden text-[13px] font-medium text-white/70 md:inline">{dashboardLabel}</span>
           </div>
         </div>
 
@@ -85,6 +101,7 @@ export function Header({ lastUpdated, alerts }: { lastUpdated: string; alerts: M
           </div>
         </div>
       </div>
+      <NavDrawer open={navOpen} onClose={() => setNavOpen(false)} />
     </header>
   );
 }
