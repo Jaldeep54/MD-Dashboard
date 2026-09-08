@@ -1,4 +1,4 @@
-import { Factory, LayoutDashboard } from "lucide-react";
+import { Droplets, Factory, LayoutDashboard } from "lucide-react";
 import type { ComponentType } from "react";
 
 export interface NavItem {
@@ -20,5 +20,11 @@ export const NAV_ITEMS: NavItem[] = [
     label: "Manufacturing Plant Dashboard",
     description: "Production, process, equipment & quality",
     icon: Factory,
+  },
+  {
+    href: "/utility",
+    label: "Utility Dashboard",
+    description: "Power, gas, water, HVAC, compressed air, vacuum & chemicals",
+    icon: Droplets,
   },
 ];
